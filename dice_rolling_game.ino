@@ -111,6 +111,7 @@ void drawDots(int x, int y) {
   oled.drawPixel(x, y-1);
 }
 
+// used to reset the game to allow for continued playing
 void resetGame() {
   rollSum = 0;
   dealerSum = 0;
@@ -134,7 +135,7 @@ void setup() {
   pinMode(hitPin, INPUT_PULLUP);
   pinMode(standPin, INPUT_PULLUP);
 
-  randomSeed(analogRead(A0));
+  randomSeed(analogRead(A0)); // used for better randomness with roll values
 
   for (int i = 0; i < nGroundPins; i++) {
     pinMode(groundPins[i], OUTPUT);
@@ -168,6 +169,7 @@ void loop() {
     int hitState = digitalRead(hitPin);
     int standState = digitalRead(standPin);
 
+    // roll dice
     if (hitState == 0 && hitPressed == false) {
       rollValue = rollTheDice();
       rollSum += rollValue;
@@ -179,6 +181,7 @@ void loop() {
       standPressed = true;
     }
 
+    // happens if you stand or go past 21
     if (!gameOver && (standPressed == true || rollSum >= 21)) {
       while (dealerSum < 17) {
         dealerRoll = rollTheDice();
@@ -191,6 +194,7 @@ void loop() {
 
     if (gameOver) {
 
+      // distances to 21
       int playerTo21 = 21 - rollSum;
       int dealerTo21 = 21 - dealerSum;
       
@@ -198,6 +202,7 @@ void loop() {
 
         gameOverTime = millis();
 
+        // win/lose conditions
         if (rollSum > 21) {
           loseCounter += 1;
         } else if (rollSum == 21 && dealerSum != 21) {
